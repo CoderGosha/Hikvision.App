@@ -36,16 +36,15 @@ public class HikvisionClient
     public async Task<BaseResponse<DeviceInfoResponse>> DeviceInfoAsync()
     {
         using var httpClient = new HttpClient( new HttpClientHandler { Credentials = CredCache});
-
         var path = new Uri(new Uri(Url), UrlGetDeviceInfo);
         using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, path);
-        
         using HttpResponseMessage response = await httpClient.SendAsync(request);
         
         if (response.StatusCode != HttpStatusCode.OK)
             return new BaseResponse<DeviceInfoResponse>()
             {
                 Code = response.StatusCode,
+                Message = await response.Content.ReadAsStringAsync()
             };
         
         var contents = await response.Content.ReadAsStringAsync();
@@ -56,5 +55,30 @@ public class HikvisionClient
             Code = response.StatusCode,
             Data = deviceInfo
         };
+    }
+
+    public async Task<BaseResponse<ManualCupResponse>> ManualCupAsync()
+    {
+        using var httpClient = new HttpClient( new HttpClientHandler { Credentials = CredCache});
+        var path = new Uri(new Uri(Url), UrlManualCap);
+        using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, path);
+        using HttpResponseMessage response = await httpClient.SendAsync(request);
+        
+        if (response.StatusCode != HttpStatusCode.OK)
+            return new BaseResponse<ManualCupResponse>()
+            {
+                Code = response.StatusCode,
+                Message = await response.Content.ReadAsStringAsync()
+            };
+
+        var bytes = await response.Content.ReadAsByteArrayAsync();
+        var manualCap = ManualCupResponse.FromBinary(bytes);
+        
+        return new BaseResponse<ManualCupResponse>()
+        {
+            Code = response.StatusCode,
+            Data = manualCap
+        };
+        
     }
 }

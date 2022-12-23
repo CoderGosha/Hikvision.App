@@ -20,5 +20,5 @@ public interface IHikvisionApi
     /// Получает фотографию с распознаванием 
     /// </summary>
     /// <returns></returns>
-    public Task<ManualCupResponse> ManualCupAsync();
+    public Task<BaseResponse<ManualCupResponse>> ManualCupAsync();
 }

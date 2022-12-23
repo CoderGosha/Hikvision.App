@@ -33,6 +33,8 @@ namespace HikvisionApp
             Console.WriteLine(
                 $"Device: {deviceInfo?.Data?.DeviceName}, ID: {deviceInfo?.Data?.DeviceID}, " +
                 $"FWVersion: {deviceInfo?.Data?.FirmwareVersion}, FWData: {deviceInfo?.Data?.FirmwareReleasedDate}");
+
+            var manualCup = await hikvison.ManualCupAsync();
         }
     }
 }

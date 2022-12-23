@@ -21,8 +21,8 @@ public class HikvisionSimpleApi : IHikvisionApi
         return await client.DeviceInfoAsync();
     }
 
-    public async Task<ManualCupResponse> ManualCupAsync()
+    public async Task<BaseResponse<ManualCupResponse>> ManualCupAsync()
     {
-        throw new NotImplementedException();
+        return await client.ManualCupAsync();
     }
 }
