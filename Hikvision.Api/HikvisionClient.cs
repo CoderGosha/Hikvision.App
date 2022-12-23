@@ -1,9 +1,7 @@
 using System.Net;
 using System.Xml;
-using System.Xml.Serialization;
-using ExtendedXmlSerializer;
-using ExtendedXmlSerializer.Configuration;
 using Hikvision.Api.ResponseModels;
+using Newtonsoft.Json;
 
 namespace Hikvision.Api;
 
@@ -51,19 +49,12 @@ public class HikvisionClient
             };
         
         var contents = await response.Content.ReadAsStringAsync();
+        var deviceInfo = DeviceInfoResponse.FromXml(contents);
         
-        // TODO кривая расшифровка посылок
-        var serializer = new ConfigurationContainer()
-            .UseOptimizedNamespaces()
-            .UseAutoFormatting()
-            .EnableImplicitTyping(typeof(DeviceInfoResponse)).Create();
-
-        var messageData = serializer.Deserialize<DeviceInfoResponse>(contents);
-
         return new BaseResponse<DeviceInfoResponse>()
         {
             Code = response.StatusCode,
-            Data = messageData
+            Data = deviceInfo
         };
     }
 }

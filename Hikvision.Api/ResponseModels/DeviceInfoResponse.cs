@@ -1,4 +1,6 @@
+using System.Xml;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
 
 namespace Hikvision.Api.ResponseModels;
 
@@ -25,4 +27,23 @@ public class DeviceInfoResponse
     
     [XmlElement("serialNumber")]
     public string SerialNumber { get; set; }
+
+    public static DeviceInfoResponse FromXml(string xml)
+    {
+        if (string.IsNullOrEmpty(xml))
+            return new DeviceInfoResponse();
+        
+        var xmlDocument = new XmlDocument();
+        xmlDocument.LoadXml(xml);
+        if (xmlDocument.FirstChild != null)
+            xmlDocument.RemoveChild(xmlDocument.FirstChild); 
+
+        var serializedXmlNode = JsonConvert.SerializeXmlNode(
+            xmlDocument, 
+            Newtonsoft.Json.Formatting.Indented, 
+            true
+        );
+        var messageData = JsonConvert.DeserializeObject<DeviceInfoResponse>(serializedXmlNode);
+        return messageData ?? new DeviceInfoResponse();
+    }
 }
