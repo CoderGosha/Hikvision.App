@@ -9,6 +9,7 @@ namespace HikvisionApp
 {
     class Program
     {
+        public static int TimeOut = 10;
         public static string SavePhotoFileWithBinaryWriter(byte[] data, string prefixPath, string number)
         {
             var dir = Directory.GetCurrentDirectory();
@@ -80,7 +81,7 @@ namespace HikvisionApp
             {
                 if (callSign == "w")
                 {
-                    await ManualWaitCap(hikvison, 10);
+                    await ManualWaitCap(hikvison, TimeOut);
                 }
                 else
                     await ManualCap(hikvison);
@@ -92,7 +93,7 @@ namespace HikvisionApp
 
         private static async Task ManualWaitCap(IHikvisionApi hikvison, int timeout)
         {
-            Console.WriteLine($"{DateTime.Now} - Starting manual wait");
+            Console.WriteLine($"{DateTime.Now} - Starting manual wait: {timeout}sec");
             Stopwatch sw = new Stopwatch();
             sw.Start();
             BaseResponse<ManualCupResponse> manualCup = null;
