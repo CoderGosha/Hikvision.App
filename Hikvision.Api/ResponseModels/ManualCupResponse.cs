@@ -23,7 +23,7 @@ public class ManualCupResponse
     /// Время прихода посылки, генерируется либой
     /// </summary>
     public DateTime DateTime { get; set; }
-    public static ManualCupResponse? FromBinary(byte[] bytes)
+    public static ManualCupResponse FromBinary(byte[] bytes)
     {
         var response = new ManualCupResponse()
         {
