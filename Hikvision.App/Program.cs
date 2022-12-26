@@ -10,42 +10,26 @@ namespace HikvisionApp
     class Program
     {
         public static int TimeOut = 10;
-        public static string SavePhotoFileWithBinaryWriter(byte[] data, string prefixPath, string number)
-        {
-            var dir = Directory.GetCurrentDirectory();
-            var basePath = Path.Join(dir, prefixPath);
-            if (!Directory.Exists(basePath))
-                Directory.CreateDirectory(basePath);
-
-            var fileName = $"{number}_" + DateTime.Now.ToString("yyyy_MM_dd_H-mm-ss") + ".jpg";
-            var filePath = Path.Join(basePath, fileName);
-
-            using var writer = new BinaryWriter(File.OpenWrite(filePath));
-            writer.Write(data);
-            return filePath;
-        }
-
-        public static async Task ManualCap(IHikvisionApi hikvison)
-        {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            var manualCup = await hikvison.ManualCupAsync();
-            if (!manualCup.IsSuccess)
-            {
-                Console.WriteLine($"Error manual cup: {manualCup.Code} message: {manualCup.Message}");
-                return;
-            }
-
-            // Метод сохранения фото
-            var filePath = SavePhotoFileWithBinaryWriter(manualCup.Data.Image, "manual_cup", manualCup.Data.Number);
-            sw.Stop();
-            Console.WriteLine(
-                $"Manual cup-{sw.ElapsedMilliseconds}ms: Recognize: {manualCup.Data?.IsRecognize} Number: {manualCup.Data?.Number} Image: {filePath}");
-        }
 
         static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Hello World!, Press to start");
+            Console.ReadLine();
+            try
+            {
+                await CameraMain();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        private static async Task CameraMain()
+        {
+            
+            Console.WriteLine("Connecting camera...");
             var config = new HikvisionConfig()
             {
                 Url = "http://192.168.0.221",
@@ -80,9 +64,7 @@ namespace HikvisionApp
             while ((callSign = Console.ReadLine().ToLower()) != exitKey)
             {
                 if (callSign == "w")
-                {
                     await ManualWaitCap(hikvison, TimeOut);
-                }
                 else
                     await ManualCap(hikvison);
 
@@ -117,6 +99,39 @@ namespace HikvisionApp
             sw.Stop();
             Console.WriteLine(
                 $"{DateTime.Now} - Manual cup-{sw.ElapsedMilliseconds}ms: Recognize: {manualCup.Data?.IsRecognize} Number: {manualCup.Data?.Number} Image: {filePathUnknown}");
+        }
+        
+        public static string SavePhotoFileWithBinaryWriter(byte[] data, string prefixPath, string number)
+        {
+            var dir = Directory.GetCurrentDirectory();
+            var basePath = Path.Join(dir, prefixPath);
+            if (!Directory.Exists(basePath))
+                Directory.CreateDirectory(basePath);
+
+            var fileName = $"{number}_" + DateTime.Now.ToString("yyyy_MM_dd_H-mm-ss") + ".jpg";
+            var filePath = Path.Join(basePath, fileName);
+
+            using var writer = new BinaryWriter(File.OpenWrite(filePath));
+            writer.Write(data);
+            return filePath;
+        }
+
+        public static async Task ManualCap(IHikvisionApi hikvison)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            var manualCup = await hikvison.ManualCupAsync();
+            if (!manualCup.IsSuccess)
+            {
+                Console.WriteLine($"Error manual cup: {manualCup.Code} message: {manualCup.Message}");
+                return;
+            }
+
+            // Метод сохранения фото
+            var filePath = SavePhotoFileWithBinaryWriter(manualCup.Data.Image, "manual_cup", manualCup.Data.Number);
+            sw.Stop();
+            Console.WriteLine(
+                $"Manual cup-{sw.ElapsedMilliseconds}ms: Recognize: {manualCup.Data?.IsRecognize} Number: {manualCup.Data?.Number} Image: {filePath}");
         }
     }
 }
