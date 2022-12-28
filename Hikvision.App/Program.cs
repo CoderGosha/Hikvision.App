@@ -52,16 +52,17 @@ namespace HikvisionApp
             }
 
             Console.WriteLine(
-                $"Device: {deviceInfo?.Data?.DeviceName}, ID: {deviceInfo?.Data?.DeviceID}, " +
-                $"FWVersion: {deviceInfo?.Data?.FirmwareVersion}, FWData: {deviceInfo?.Data?.FirmwareReleasedDate}");
+                $"Device: {deviceInfo.Data.DeviceName}, ID: {deviceInfo.Data.DeviceID}, " +
+                $"FWVersion: {deviceInfo.Data.FirmwareVersion}, FWData: {deviceInfo.Data.FirmwareReleasedDate}");
 
             await ManualCap(hikvison);
 
             string exitKey = "x";
             string callSign;
             // 
-            Console.WriteLine("Press key to manual cup, W to manual cup with timeout or X to exit: ");
-            while ((callSign = Console.ReadLine().ToLower()) != exitKey)
+            var messageRead = "Press key to manual cup, W to manual cup with timeout or X to exit:";
+            Console.WriteLine(messageRead);
+            while ((callSign = Console.ReadLine()?.ToLower()) != exitKey)
             {
                 if (callSign == "w")
                     await ManualWaitCap(hikvison, TimeOut);
@@ -69,7 +70,7 @@ namespace HikvisionApp
                     await ManualCap(hikvison);
 
                 Console.WriteLine("");
-                Console.WriteLine("Enter a call sign to find in the list. Press X to exit: "); //Prompt
+                Console.WriteLine(messageRead); //Prompt
             }
         }
 
@@ -131,7 +132,7 @@ namespace HikvisionApp
             var filePath = SavePhotoFileWithBinaryWriter(manualCup.Data.Image, "manual_cup", manualCup.Data.Number);
             sw.Stop();
             Console.WriteLine(
-                $"Manual cup-{sw.ElapsedMilliseconds}ms: Recognize: {manualCup.Data?.IsRecognize} Number: {manualCup.Data?.Number} Image: {filePath}");
+                $"Manual cup-{sw.ElapsedMilliseconds}ms: Recognize: {manualCup.Data.IsRecognize} Number: {manualCup.Data.Number} Image: {filePath}");
         }
     }
 }
