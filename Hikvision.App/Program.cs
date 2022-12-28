@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Hikvision.Api;
 using Hikvision.Api.ResponseModels;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace HikvisionApp
 {
@@ -17,7 +20,18 @@ namespace HikvisionApp
             Console.ReadLine();
             try
             {
-                await CameraMain();
+                var builder = new ConfigurationBuilder()
+                    .AddJsonFile($"appsettings.json", true, true);
+                var config = builder.Build();
+                var configHikvision = new HikvisionConfig()
+                {
+                    Url = config["HikvisionConfig:Url"],
+                    User = config["HikvisionConfig:User"],
+                    Password = config["HikvisionConfig:Password"]
+                };
+                TimeOut = Int32.Parse(config["ManualCupWaitTimeOutSec"]);
+                
+                await CameraMain(configHikvision);
             }
             catch (Exception e)
             {
@@ -26,17 +40,11 @@ namespace HikvisionApp
             }
         }
 
-        private static async Task CameraMain()
+        private static async Task CameraMain(HikvisionConfig configHikvision)
         {
             
-            Console.WriteLine("Connecting camera...");
-            var config = new HikvisionConfig()
-            {
-                Url = "http://192.168.0.221",
-                User = "user",
-                Password = "1q2w3e4r"
-            };
-            IHikvisionApi hikvison = new HikvisionSimpleApi(config);
+            Console.WriteLine($"Connecting camera with: {JsonConvert.SerializeObject(configHikvision)}");
+            IHikvisionApi hikvison = new HikvisionSimpleApi(configHikvision);
             var response = await hikvison.IsAuthenticatedAsync();
             if (!response.IsSuccess)
             {
