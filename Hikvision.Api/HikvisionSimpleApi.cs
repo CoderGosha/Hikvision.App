@@ -25,4 +25,9 @@ public class HikvisionSimpleApi : IHikvisionApi
     {
         return await client.ManualCupAsync();
     }
+
+    public async Task<BaseResponse<PictureResponse>> PictureAsync()
+    {
+        return await client.PictureAsync();
+    }
 }

@@ -63,6 +63,12 @@ namespace HikvisionApp
                 $"Device: {deviceInfo.Data.DeviceName}, ID: {deviceInfo.Data.DeviceID}, " +
                 $"FWVersion: {deviceInfo.Data.FirmwareVersion}, FWData: {deviceInfo.Data.FirmwareReleasedDate}");
 
+            
+            // Тест получения кадра 
+            var picture = await hikvison.PictureAsync();
+            if (picture.IsSuccess)
+                SavePhotoFileWithBinaryWriter(picture.Data.Image, "streaming_picture", "test");
+            
             await ManualCap(hikvison);
 
             string exitKey = "x";
